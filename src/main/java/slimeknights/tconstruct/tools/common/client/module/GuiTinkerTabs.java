@@ -1,5 +1,7 @@
 package slimeknights.tconstruct.tools.common.client.module;
 
+import java.util.List;
+
 import com.google.common.collect.Lists;
 
 import net.minecraft.block.state.IBlockState;
@@ -8,15 +10,12 @@ import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
-
-import java.util.List;
-
 import slimeknights.mantle.client.gui.GuiElement;
-import slimeknights.mantle.client.gui.GuiModule;
 import slimeknights.mantle.client.gui.GuiWidgetTabs;
+import slimeknights.tconstruct.tools.common.client.GuiModuleExtended;
 import slimeknights.tconstruct.tools.common.client.GuiTinkerStation;
 
-public class GuiTinkerTabs extends GuiModule {
+public class GuiTinkerTabs extends GuiModuleExtended {
 
   protected static final GuiElement GUI_Tab = new GuiElement(0, 2, 28, 28, 256, 256);
   protected static final GuiElement GUI_TabActiveL = new GuiElement(0, 32, 28, 32, 256, 256);

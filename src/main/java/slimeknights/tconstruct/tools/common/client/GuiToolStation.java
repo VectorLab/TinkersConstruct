@@ -30,6 +30,7 @@ import java.util.Set;
 import slimeknights.mantle.client.gui.GuiElement;
 import slimeknights.mantle.client.gui.GuiElementScalable;
 import slimeknights.mantle.client.gui.GuiModule;
+import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.TinkerNetwork;
 import slimeknights.tconstruct.library.TinkerRegistry;
 import slimeknights.tconstruct.library.TinkerRegistryClient;
@@ -106,7 +107,7 @@ public class GuiToolStation extends GuiTinkerStation {
     this.addModule(traitInfo);
 
     toolInfo.yOffset = 5;
-    traitInfo.yOffset = toolInfo.ySize + 9;
+    traitInfo.yOffset = toolInfo.getYSize() + 9;
 
     this.ySize = 174;
 
@@ -133,10 +134,18 @@ public class GuiToolStation extends GuiTinkerStation {
     toolInfo.xOffset = 2;
     toolInfo.yOffset = beamC.h + panelDecorationL.h;
     traitInfo.xOffset = toolInfo.xOffset;
-    traitInfo.yOffset = toolInfo.yOffset + toolInfo.ySize + 4;
+    traitInfo.yOffset = toolInfo.yOffset + toolInfo.getYSize() + 4;
 
     for(GuiModule module : modules) {
-      module.guiTop += 4;
+    	GuiModuleExtended x = null;
+    	try {
+    		x=(GuiModuleExtended) module;
+    		x.setGuiTop(x.getGuiTop()+4);
+    	}catch(ClassCastException e) {
+    		TConstruct.log.error("Could not update the guiTop for class {} when initGui due to class not patched !",module.getClass().getName());
+    		TConstruct.log.catching(e);
+    	}
+//      module.guiTop += 4;
     }
 
     updateGUI();
@@ -452,34 +461,35 @@ public class GuiToolStation extends GuiTinkerStation {
     }
 
     this.mc.getTextureManager().bindTexture(BACKGROUND);
-    x = buttons.guiLeft - beamL.w;
+    x = buttons.getGuiLeft() - beamL.w;
     y = cornerY;
     // draw the beams at the top
     x += beamL.draw(x, y);
-    x += beamC.drawScaledX(x, y, buttons.xSize);
+    x += beamC.drawScaledX(x, y, buttons.getXSize());
     beamR.draw(x, y);
 
-    x = toolInfo.guiLeft - beamL.w;
+    x = toolInfo.getGuiLeft() - beamL.w;
     x += beamL.draw(x, y);
-    x += beamC.drawScaledX(x, y, toolInfo.xSize);
+    x += beamC.drawScaledX(x, y, toolInfo.getXSize());
     beamR.draw(x, y);
 
     // draw the decoration for the buttons
-    for(Object o : buttons.buttonList) {
+    List<GuiButton> buttonList=buttons.getButtonList();
+    for(Object o : buttonList) {
       GuiButton button = (GuiButton) o;
 
       buttonDecorationTop.draw(button.x, button.y - buttonDecorationTop.h);
       // don't draw the bottom for the buttons in the last row
-      if(button.id < buttons.buttonList.size() - Column_Count) {
+      if(button.id < buttonList.size() - Column_Count) {
         buttonDecorationBot.draw(button.x, button.y + button.height);
       }
     }
 
     // draw the decorations for the panels
-    panelDecorationL.draw(toolInfo.guiLeft + 5, toolInfo.guiTop - panelDecorationL.h);
-    panelDecorationR.draw(toolInfo.guiRight() - 5 - panelDecorationR.w, toolInfo.guiTop - panelDecorationR.h);
-    panelDecorationL.draw(traitInfo.guiLeft + 5, traitInfo.guiTop - panelDecorationL.h);
-    panelDecorationR.draw(traitInfo.guiRight() - 5 - panelDecorationR.w, traitInfo.guiTop - panelDecorationR.h);
+    panelDecorationL.draw(toolInfo.getGuiLeft() + 5, toolInfo.getGuiTop() - panelDecorationL.h);
+    panelDecorationR.draw(toolInfo.guiRight() - 5 - panelDecorationR.w, toolInfo.getGuiTop() - panelDecorationR.h);
+    panelDecorationL.draw(traitInfo.getGuiLeft() + 5, traitInfo.getGuiTop() - panelDecorationL.h);
+    panelDecorationR.draw(traitInfo.guiRight() - 5 - panelDecorationR.w, traitInfo.getGuiTop() - panelDecorationR.h);
 
     GlStateManager.enableDepth();
 

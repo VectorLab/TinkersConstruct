@@ -6,18 +6,17 @@ import net.minecraft.inventory.Slot;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-
 import slimeknights.mantle.client.gui.GuiElement;
 import slimeknights.mantle.client.gui.GuiElementScalable;
-import slimeknights.mantle.client.gui.GuiModule;
 import slimeknights.mantle.client.gui.GuiMultiModule;
 import slimeknights.mantle.client.gui.GuiWidgetSlider;
 import slimeknights.mantle.inventory.BaseContainer;
 import slimeknights.tconstruct.library.Util;
+import slimeknights.tconstruct.tools.common.client.GuiModuleExtended;
 
 // a side inventory to be displayed to the left or right of another GUI
 @SideOnly(Side.CLIENT)
-public class GuiSideInventory extends GuiModule {
+public class GuiSideInventory extends GuiModuleExtended {
 
   protected GuiElementScalable overlap = GuiGeneric.overlap;
   protected GuiElement overlapTopLeft = GuiGeneric.overlapTopLeft;
@@ -113,9 +112,8 @@ public class GuiSideInventory extends GuiModule {
     return firstSlotId <= slot.getSlotIndex() && lastSlotId > slot.getSlotIndex();
   }
 
-  @Override
   public boolean isMouseOverSlot(Slot slotIn, int mouseX, int mouseY) {
-    return super.isMouseOverSlot(slotIn, mouseX, mouseY) && shouldDrawSlot(slotIn);
+    return this.isPointInRegion(slotIn.xPos, slotIn.yPos, 16, 16, mouseX, mouseY) && shouldDrawSlot(slotIn);
   }
 
   public void updateSlotCount(int newSlotCount) {

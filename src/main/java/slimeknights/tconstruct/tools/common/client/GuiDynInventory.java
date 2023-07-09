@@ -15,7 +15,7 @@ import slimeknights.tconstruct.tools.common.client.module.GuiGeneric;
  * Adds a slider to scroll if needed.
  * Columns and Rows displayed are calculated from the space it takes up
  */
-public class GuiDynInventory extends GuiModule {
+public class GuiDynInventory extends GuiModuleExtended {
 
   // Graphic Resources
   protected static final GuiElementScalable slot = GuiGeneric.slot;

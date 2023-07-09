@@ -4,6 +4,7 @@ import slimeknights.mantle.client.gui.GuiElement;
 import slimeknights.mantle.client.gui.GuiElementScalable;
 import slimeknights.mantle.client.gui.GuiModule;
 import slimeknights.mantle.client.gui.GuiWidget;
+import slimeknights.tconstruct.tools.common.client.GuiModuleExtended;
 
 public class GuiWidgetBorder extends GuiWidget {
 
@@ -41,12 +42,16 @@ public class GuiWidgetBorder extends GuiWidget {
     return height + borderTop.h + borderBottom.h;
   }
 
-  public void updateParent(GuiModule gui) {
-    gui.guiLeft -= borderLeft.w;
-    gui.guiTop -= borderTop.h;
+  public void updateParent(GuiModuleExtended gui) {
+	  gui.setGuiLeft(gui.getGuiLeft()-borderLeft.w);
+//    gui.guiLeft -= borderLeft.w;
+	  gui.setGuiTop(gui.getGuiTop()-borderTop.h);
+//    gui.guiTop -= borderTop.h;
 
-    gui.xSize += borderLeft.w + borderRight.w;
-    gui.ySize += borderTop.h + borderBottom.h;
+	  gui.setXSize(gui.getXSize()+(borderLeft.w + borderRight.w));
+//    gui.xSize += borderLeft.w + borderRight.w;
+	  gui.setYSize(gui.getYSize()+(borderTop.h + borderBottom.h));
+//    gui.ySize += borderTop.h + borderBottom.h;
   }
 
   @Override

@@ -24,8 +24,9 @@ import slimeknights.mantle.client.gui.GuiWidgetSlider;
 import slimeknights.mantle.util.LocUtils;
 import slimeknights.tconstruct.common.ClientProxy;
 import slimeknights.tconstruct.library.Util;
+import slimeknights.tconstruct.tools.common.client.GuiModuleExtended;
 
-public class GuiInfoPanel extends GuiModule {
+public class GuiInfoPanel extends GuiModuleExtended {
 
   private static int resW = 118;
   private static int resH = 75;

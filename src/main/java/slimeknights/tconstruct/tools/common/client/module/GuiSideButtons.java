@@ -4,14 +4,16 @@ import net.minecraft.client.gui.GuiButton;
 import net.minecraft.inventory.Container;
 
 import java.io.IOException;
+import java.util.List;
 
 import slimeknights.mantle.client.gui.GuiModule;
 import slimeknights.mantle.client.gui.GuiMultiModule;
+import slimeknights.tconstruct.tools.common.client.GuiModuleExtended;
 
 /**
  * A grid of buttons that allows you to select one of them
  */
-public class GuiSideButtons extends GuiModule {
+public class GuiSideButtons extends GuiModuleExtended {
 
   private final int columns;
   private GuiButton clickedButton;
@@ -42,7 +44,7 @@ public class GuiSideButtons extends GuiModule {
     button.y = guiTop + y;
 
     if(this.right) {
-      button.x += parent.xSize;
+      button.x += parent.getXSize();
     }
 
     this.buttonList.add(button);
@@ -82,5 +84,9 @@ public class GuiSideButtons extends GuiModule {
     for(GuiButton button : buttonList) {
       button.drawButton(this.mc, mouseX, mouseY, partialTicks);
     }
+  }
+  
+  public List<GuiButton> getButtonList() {
+	  return this.buttonList;
   }
 }
