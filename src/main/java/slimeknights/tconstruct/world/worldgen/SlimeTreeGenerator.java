@@ -15,14 +15,18 @@ import slimeknights.tconstruct.world.TinkerWorld;
 
 import java.util.Random;
 
-public class SlimeTreeGenerator implements IWorldGenerator {
+import com.google.gson.JsonObject;
 
-  public final int minTreeHeight;
-  public final int treeHeightRange;
-  public final IBlockState log;
-  public final IBlockState leaves;
-  public final IBlockState vine;
-  public final boolean seekHeight;
+public class SlimeTreeGenerator implements IWorldGenerator,JsonSerializable {
+
+	private int minTreeHeight;
+	private int treeHeightRange;
+	private IBlockState log;
+	private IBlockState leaves;
+	private IBlockState vine;
+	private boolean seekHeight;
+	
+	public SlimeTreeGenerator() {}
 
   public SlimeTreeGenerator(int treeHeight, int treeRange, IBlockState log, IBlockState leaves, IBlockState vine, boolean seekHeight) {
     this.minTreeHeight = treeHeight;
@@ -37,14 +41,12 @@ public class SlimeTreeGenerator implements IWorldGenerator {
     this(treeHeight, treeRange, log, leaves, vine, true);
   }
 
+//this function hidden for common generator
   @Override
-  public void generate(Random random, int chunkX, int chunkZ, World world, IChunkGenerator chunkGenerator, IChunkProvider chunkProvider) {
-
-  }
+  public void generate(Random random, int chunkX, int chunkZ, World world, IChunkGenerator chunkGenerator, IChunkProvider chunkProvider) {}
 
   public void generateTree(Random random, World world, BlockPos pos) {
     int height = random.nextInt(this.treeHeightRange) + this.minTreeHeight;
-    boolean flag = true;
     if(seekHeight) {
       pos = findGround(world, pos);
       if(pos.getY() < 0) {
@@ -67,7 +69,7 @@ public class SlimeTreeGenerator implements IWorldGenerator {
     }
   }
 
-  BlockPos findGround(World world, BlockPos pos) {
+  private BlockPos findGround(World world, BlockPos pos) {
     do {
       IBlockState state = world.getBlockState(pos);
       Block heightID = state.getBlock();
@@ -81,7 +83,7 @@ public class SlimeTreeGenerator implements IWorldGenerator {
     return pos;
   }
 
-  void placeCanopy(World world, Random random, BlockPos pos, int height) {
+  private void placeCanopy(World world, Random random, BlockPos pos, int height) {
     pos = pos.up(height);
     for(int i = 0; i < 4; i++) {
       placeDiamondLayer(world, pos.down(i), i + 1);
@@ -180,4 +182,33 @@ public class SlimeTreeGenerator implements IWorldGenerator {
       world.setBlockState(pos, stateNew, 2);
     }
   }
+
+@Override
+public JsonObject toJson() {
+	JsonObject root=new JsonObject();
+	root.addProperty("minTreeHeight",this.minTreeHeight);
+	root.addProperty("treeHeightRange",this.treeHeightRange);
+	root.add("log",SlimeIslandUtilities.serializeBlockToJson(this.log));
+	root.add("leaves",SlimeIslandUtilities.serializeBlockToJson(this.leaves));
+	root.add("vine",SlimeIslandUtilities.serializeBlockToJson(this.vine));
+	root.addProperty("seekHeight",this.seekHeight);
+	return root;
+}
+
+@Override
+public boolean fromJson(JsonObject o) {
+	this.minTreeHeight=o.get("minTreeHeight").getAsInt();
+	this.treeHeightRange=o.get("treeHeightRange").getAsInt();
+	if (o.has("log")&&o.get("log").isJsonObject()) {
+		this.log = SlimeIslandUtilities.deserializeJsonToBlock(o.get("log").getAsJsonObject());
+	}
+	if (o.has("leaves")&&o.get("leaves").isJsonObject()) {
+		this.leaves = SlimeIslandUtilities.deserializeJsonToBlock(o.get("leaves").getAsJsonObject());
+	}
+	if (o.has("vine")&&o.get("vine").isJsonObject()) {
+		this.vine = SlimeIslandUtilities.deserializeJsonToBlock(o.get("vine").getAsJsonObject());
+	}
+	this.seekHeight=o.get("seekHeight").getAsBoolean();
+	return true;
+}
 }

@@ -16,13 +16,14 @@ import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.library.Util;
 import slimeknights.tconstruct.library.utils.RecipeUtil;
 
+import java.io.File;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
 public final class Config {
 
-  public static ForgeCFG pulseConfig = new ForgeCFG("TinkerModules", "Modules");
+  public static ForgeCFG pulseConfig = new ForgeCFG(Util.MODID+File.separator+"TinkerModules", "Modules");
   public static Config instance = new Config();
   public static Logger log = Util.getLogger("Config");
 
@@ -70,11 +71,11 @@ public final class Config {
 
   // Worldgen
   public static boolean genSlimeIslands = true;
-  public static boolean genIslandsInSuperflat = false;
-  public static int slimeIslandsRate = 730; // Every x-th chunk will have a slime island. so 1 = every chunk, 100 = every 100th
-  public static int magmaIslandsRate = 100; // Every x-th chunk will have a slime island. so 1 = every chunk, 100 = every 100th
-  public static int[] slimeIslandBlacklist = new int[]{-1, 1};
-  public static boolean slimeIslandsOnlyGenerateInSurfaceWorlds = true;
+//  public static boolean genIslandsInSuperflat = false;// hide
+//  public static int slimeIslandsRate = 730;// hide // Every x-th chunk will have a slime island. so 1 = every chunk, 100 = every 100th
+//  public static int magmaIslandsRate = 100; // Every x-th chunk will have a slime island. so 1 = every chunk, 100 = every 100th
+//  public static int[] slimeIslandBlacklist = new int[]{-1, 1};
+//  public static boolean slimeIslandsOnlyGenerateInSurfaceWorlds = true;// hide
   public static boolean genCobalt = true;
   public static int cobaltRate = 20; // max. cobalt per chunk
   public static boolean genArdite = true;
@@ -102,7 +103,7 @@ public final class Config {
   static ConfigCategory ClientSide;
 
   public static void load(FMLPreInitializationEvent event) {
-    configFile = new Configuration(event.getSuggestedConfigurationFile(), "0.1", false);
+    configFile = new Configuration(new File(new File(event.getModConfigurationDirectory(),Util.MODID),"main.cfg"), "0.1", false);
 
     MinecraftForge.EVENT_BUS.register(instance);
 
@@ -255,7 +256,7 @@ public final class Config {
       prop.setComment("If true slime islands will generate");
       genSlimeIslands = prop.getBoolean();
       propOrder.add(prop.getName());
-
+/*
       prop = configFile.get(cat, "generateIslandsInSuperflat", genIslandsInSuperflat);
       prop.setComment("If true slime islands generate in superflat worlds");
       genIslandsInSuperflat = prop.getBoolean();
@@ -280,7 +281,7 @@ public final class Config {
       prop.setComment("If false, slime islands only generate in dimensions which are of type surface. This means they won't generate in modded cave dimensions like the Deep Dark. Note that the name of this property is inverted: It must be set to false to prevent slime islands from generating in non-surface dimensions.");
       slimeIslandsOnlyGenerateInSurfaceWorlds = prop.getBoolean();
       propOrder.add(prop.getName());
-
+*/
       // Nether ore generation
       prop = configFile.get(cat, "genCobalt", genCobalt);
       prop.setComment("If true, cobalt ore will generate in the nether");

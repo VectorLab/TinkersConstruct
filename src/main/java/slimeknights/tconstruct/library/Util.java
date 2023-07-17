@@ -38,11 +38,8 @@ public class Util {
   public static final DecimalFormat dfPercent = new DecimalFormat("#%");
 
   public static Logger getLogger(String type) {
-    String log = MODID;
-
-    return LogManager.getLogger(log + "-" + type);
+    return LogManager.getLogger(MODID + "-" + type);
   }
-
 
   /**
    * Removes all whitespaces from the given string and makes it lowerspace.

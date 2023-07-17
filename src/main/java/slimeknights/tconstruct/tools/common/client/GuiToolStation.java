@@ -1,5 +1,12 @@
 package slimeknights.tconstruct.tools.common.client;
 
+import java.io.IOException;
+import java.util.List;
+import java.util.Set;
+
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.util.Point;
+
 import com.google.common.collect.Lists;
 
 import net.minecraft.client.gui.GuiButton;
@@ -19,18 +26,9 @@ import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.util.Point;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.Set;
-
 import slimeknights.mantle.client.gui.GuiElement;
 import slimeknights.mantle.client.gui.GuiElementScalable;
 import slimeknights.mantle.client.gui.GuiModule;
-import slimeknights.tconstruct.TConstruct;
 import slimeknights.tconstruct.common.TinkerNetwork;
 import slimeknights.tconstruct.library.TinkerRegistry;
 import slimeknights.tconstruct.library.TinkerRegistryClient;
@@ -46,6 +44,7 @@ import slimeknights.tconstruct.library.tinkering.TinkersItem;
 import slimeknights.tconstruct.library.tools.IToolPart;
 import slimeknights.tconstruct.library.tools.ToolCore;
 import slimeknights.tconstruct.library.utils.TagUtil;
+import slimeknights.tconstruct.tools.TinkerTools;
 import slimeknights.tconstruct.tools.common.client.module.GuiButtonsToolStation;
 import slimeknights.tconstruct.tools.common.client.module.GuiInfoPanel;
 import slimeknights.tconstruct.tools.common.inventory.ContainerTinkerStation;
@@ -142,8 +141,8 @@ public class GuiToolStation extends GuiTinkerStation {
     		x=(GuiModuleExtended) module;
     		x.setGuiTop(x.getGuiTop()+4);
     	}catch(ClassCastException e) {
-    		TConstruct.log.error("Could not update the guiTop for class {} when initGui due to class not patched !",module.getClass().getName());
-    		TConstruct.log.catching(e);
+    		TinkerTools.log.error("Could not update the guiTop for class {} when initGui due to class not patched !",module.getClass().getName());
+    		TinkerTools.log.catching(e);
     	}
 //      module.guiTop += 4;
     }

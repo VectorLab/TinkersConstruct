@@ -9,24 +9,27 @@ import net.minecraftforge.fml.common.IWorldGenerator;
 
 import java.util.Random;
 
+import com.google.gson.JsonObject;
+
 import slimeknights.tconstruct.world.TinkerWorld;
-import slimeknights.tconstruct.world.block.BlockSlimeGrass;
 import slimeknights.tconstruct.world.block.BlockTallSlimeGrass;
+import slimeknights.tconstruct.world.block.BlockSlimeGrass.FoliageType;
 
-public class SlimePlantGenerator implements IWorldGenerator {
+public class SlimePlantGenerator implements IWorldGenerator,JsonSerializable {
 
-  public final BlockSlimeGrass.FoliageType foliageType;
-  public final boolean clumped;
+  private FoliageType foliageType;
+  private boolean clumped;
 
-  public SlimePlantGenerator(BlockSlimeGrass.FoliageType foliageType, boolean clumped) {
+  public SlimePlantGenerator(FoliageType foliageType, boolean clumped) {
     this.foliageType = foliageType;
     this.clumped = clumped;
   }
 
-  @Override
-  public void generate(Random random, int chunkX, int chunkZ, World world, IChunkGenerator chunkGenerator, IChunkProvider chunkProvider) {
+  public SlimePlantGenerator() {}
 
-  }
+// this function hidden for common generator
+  @Override
+  public void generate(Random random, int chunkX, int chunkZ, World world, IChunkGenerator chunkGenerator, IChunkProvider chunkProvider) {}
 
   public void generatePlants(Random random, World world, BlockPos from, BlockPos to, int attempts) {
     int xd = to.getX() - from.getX();
@@ -53,4 +56,19 @@ public class SlimePlantGenerator implements IWorldGenerator {
       }
     }
   }
+
+@Override
+public JsonObject toJson() {
+	JsonObject root=new JsonObject();
+	root.addProperty("foliageType",this.foliageType.name());
+	root.addProperty("clumped",this.clumped);
+	return root;
+}
+
+@Override
+public boolean fromJson(JsonObject o) {
+	this.foliageType=FoliageType.valueOf(o.get("foliageType").getAsString());
+	this.clumped=o.get("clumped").getAsBoolean();
+	return false;
+}
 }

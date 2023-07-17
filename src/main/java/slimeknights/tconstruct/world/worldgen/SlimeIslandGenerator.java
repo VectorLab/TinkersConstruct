@@ -1,33 +1,30 @@
 package slimeknights.tconstruct.world.worldgen;
 
-import gnu.trove.map.hash.TIntObjectHashMap;
+import java.awt.geom.Ellipse2D;
+import java.util.Random;
+
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.minecraft.world.WorldType;
 import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.gen.IChunkGenerator;
 import net.minecraft.world.gen.structure.StructureBoundingBox;
 import net.minecraftforge.fml.common.IWorldGenerator;
 import slimeknights.tconstruct.common.config.Config;
-import slimeknights.tconstruct.shared.TinkerCommons;
-import slimeknights.tconstruct.shared.TinkerFluids;
-import slimeknights.tconstruct.shared.block.BlockSlime;
-import slimeknights.tconstruct.world.TinkerWorld;
-import slimeknights.tconstruct.world.block.BlockSlimeDirt;
-import slimeknights.tconstruct.world.block.BlockSlimeGrass;
 import slimeknights.tconstruct.world.block.BlockSlimeVine;
-
-import java.awt.geom.Ellipse2D;
-import java.util.Optional;
-import java.util.Random;
+import slimeknights.tconstruct.world.worldgen.SlimeIslandData.SlimeIslandDataEntry;
+import slimeknights.tconstruct.world.worldgen.SlimeIslandData.SlimeIslandGenStatus;
+import slimeknights.tconstruct.world.worldgen.dim.IDimConfig;
+import slimeknights.tconstruct.world.worldgen.dim.RDimConfig;
+import slimeknights.tconstruct.world.worldgen.type.ISlimeIslandType;
 
 public class SlimeIslandGenerator implements IWorldGenerator {
+	public static final IBlockState air = Blocks.AIR.getDefaultState();
+	public static final int RANDOMNESS = 1; // 2% chance to have an abnormality in the surface
 
-  public static SlimeIslandGenerator INSTANCE = new SlimeIslandGenerator();
-
+/*
   // defines the jaggedness of the surface/bottom
   protected static final int RANDOMNESS = 1; // 2% chance to have an abnormality in the surface
 
@@ -44,8 +41,9 @@ public class SlimeIslandGenerator implements IWorldGenerator {
   protected IBlockState air;
 
   protected TIntObjectHashMap<SlimeIslandData> islandData = new TIntObjectHashMap<>();
-
+*/
   public SlimeIslandGenerator() {
+	  /*
     air = Blocks.AIR.getDefaultState();
 
     IBlockState slimeGreen = TinkerCommons.blockSlimeCongealed.getDefaultState().withProperty(BlockSlime.TYPE, BlockSlime.SlimeType.GREEN);
@@ -73,8 +71,9 @@ public class SlimeIslandGenerator implements IWorldGenerator {
 
     plantGenBlue = new SlimePlantGenerator(BlockSlimeGrass.FoliageType.BLUE, false);
     plantGenPurple = new SlimePlantGenerator(BlockSlimeGrass.FoliageType.PURPLE, false);
+    */
   }
-
+/*
   public boolean isSlimeIslandAt(World world, BlockPos pos) {
     for(StructureBoundingBox data : getIslandData(world).getIslands()) {
       if(data.isVecInside(pos)) {
@@ -110,12 +109,13 @@ public class SlimeIslandGenerator implements IWorldGenerator {
     }
     return true;
   }
-
+*/
   @Override
   public void generate(Random random, int chunkX, int chunkZ, World world, IChunkGenerator chunkGenerator, IChunkProvider chunkProvider) {
     if(!Config.genSlimeIslands) {
       return;
     }
+/*
     // do we generate in superflat?
     if(world.getWorldType() == WorldType.FLAT && !Config.genIslandsInSuperflat) {
       return;
@@ -127,7 +127,11 @@ public class SlimeIslandGenerator implements IWorldGenerator {
     if(!shouldGenerateInDimension(world.provider.getDimension())) {
       return;
     }
-
+*/
+    IDimConfig dimcfg=RDimConfig.getConfigByDimension(world.provider.getDimension());
+    if(null==dimcfg) {
+    	return;
+    }
     /*
     we only want to generate in already generated chunks.
     Our generation parameters are:
@@ -149,36 +153,48 @@ public class SlimeIslandGenerator implements IWorldGenerator {
     // predetermine the seed so the generation is the same no matter if the island is generated directly
     // or after the surrounding chunks have been generated
     long generationSeed = random.nextLong();
+    SlimeIslandData slimeIslandData = SlimeIslandUtilities.getIslandData(world);
 
     // do we generate in this chunk?
-    if(random.nextInt(getGenerationChance()) > 0) {
-      SlimeIslandData slimeIslandData = getIslandData(world);
+    if(random.nextInt(slimeIslandData.dimConfig.getBaseRateBound()) > 0) {
+    	// no island here
       // check if we need to generate in one of the surrounding chunks
       for(int x = chunkX - 1; x <= chunkX + 1; x++) {
         for(int z = chunkZ - 1; z <= chunkZ + 1; z++) {
-          Optional<Long> optionalGenerationSeed = slimeIslandData.getSeedForChunkToGenerate(x, z);
-          if(optionalGenerationSeed.isPresent() && areSurroundingChunksLoaded(x, z, chunkProvider)) {
-            generateIslandInChunk(optionalGenerationSeed.get(), world, x, z);
-            slimeIslandData.markChunkAsGenerated(x, z);
-          }
+        	SlimeIslandDataEntry cp=slimeIslandData.getEntry(x, z);
+        	if(null==cp) {
+        		continue;
+        	}
+        	if(SlimeIslandGenStatus.SCHEDULED!=cp.status) {
+        		continue;
+        	}
+        	if(!this.areSurroundingChunksLoaded(x, z, chunkProvider)) {
+        		continue;
+        	}
+        	this.generateIslandInChunk(cp, world, x, z);
         }
       }
-      return;
-    }
-    if(!areSurroundingChunksLoaded(chunkX, chunkZ, chunkProvider)) {
-      getIslandData(world).markChunkForGeneration(chunkX, chunkZ, generationSeed);
-      return;
+    }else {
+    	SlimeIslandDataEntry cp=slimeIslandData.createOrGetEntry(chunkX, chunkZ);
+    	cp.status=SlimeIslandGenStatus.SCHEDULED;
+    	cp.seed=generationSeed;
+    	
+    	// spawn island here
+        if(areSurroundingChunksLoaded(chunkX, chunkZ, chunkProvider)) {
+        	// ready to spawn
+        	this.generateIslandInChunk(cp,world, chunkX, chunkZ);
+        }
     }
 
-    generateIslandInChunk(generationSeed, world, chunkX, chunkZ);
   }
-
+/*
   protected int getGenerationChance() {
     return Config.slimeIslandsRate;
   }
-
-  protected void generateIslandInChunk(long seed, World world, int chunkX, int chunkZ) {
-    Random random = new Random(seed);
+*/
+  protected void generateIslandInChunk(SlimeIslandDataEntry cp, World world, int chunkX, int chunkZ) {
+    Random random = new Random(cp.seed);
+    /* // 6 7 8 9
     // determine parameters of the slime island!
     // default is a blue island
     BlockSlimeGrass.FoliageType grass = BlockSlimeGrass.FoliageType.BLUE;
@@ -190,7 +206,7 @@ public class SlimeIslandGenerator implements IWorldGenerator {
 
     int rnr = random.nextInt(10);
     // purple island.. rare!
-    if(rnr <= 1) {
+    if(rnr <= 1) {// 0 1
       grass = BlockSlimeGrass.FoliageType.PURPLE;
       dirt = BlockSlimeDirt.DirtType.PURPLE;
       lakeGen = lakeGenPurple;
@@ -199,21 +215,31 @@ public class SlimeIslandGenerator implements IWorldGenerator {
       vine = TinkerWorld.slimeVinePurple1.getDefaultState();
     }
     // green island.. not so rare
-    else if(rnr < 6) {
+    else if(rnr < 6) {// 2 3 4 5
       dirt = BlockSlimeDirt.DirtType.GREEN;
       lakeGen = lakeGenGreen;
     }
 
     IBlockState dirtState = TinkerWorld.slimeDirt.getDefaultState().withProperty(BlockSlimeDirt.TYPE, dirt);
     IBlockState grassState = TinkerWorld.slimeGrass.getStateFromDirt(dirtState).withProperty(BlockSlimeGrass.FOLIAGE, grass);
-
+*/
+    ISlimeIslandType islandType=cp.owner.dimConfig.selectIslandForSpawn(random);
+    cp.setIslandType(islandType);
+    cp.owner.markDirty();
+    
     int x = chunkX * 16 + 4 + random.nextInt(8);
     int z = chunkZ * 16 + 4 + random.nextInt(8);
-    int y = world.getHeight(new BlockPos(x, 0, z)).getY() + 50 + random.nextInt(50) + 11;
+//    int y = world.getHeight(new BlockPos(x, 0, z)).getY() + 50 + random.nextInt(50) + 11;
+    int y=islandType.locateFindBaseY(world, random, x, z);
+    if(-1==y) {
+    	// failed to find a suitable height
+    	cp.status=SlimeIslandGenStatus.CANCELLED;
+    	return;
+    }
 
-    generateIsland(random, world, x, z, y, dirtState, grassState, vine, lakeGen, treeGen, plantGen);
+    generateIsland(random, world, x, z, y, islandType.getDirtState(), islandType.getGrassState(), islandType.getVine(), islandType.getLakeGen(), islandType.getTreeGen(), islandType.getPlantGen());
   }
-
+// core area
   public void generateIsland(Random random, World world, int xPos, int zPos, int ySurfacePos, IBlockState dirt, IBlockState grass, IBlockState vine, SlimeLakeGenerator lakeGenerator, SlimeTreeGenerator treeGenerator, SlimePlantGenerator plantGen) {
     int xRange = 20 + random.nextInt(13);
     int zRange = 20 + random.nextInt(13);
@@ -327,13 +353,23 @@ public class SlimeIslandGenerator implements IWorldGenerator {
       }
     }
 
+    SlimeIslandDataEntry cp=SlimeIslandUtilities.getIslandData(world).getEntry(xPos>>4,zPos>>4);
+    
+    cp.range=new StructureBoundingBox(start.getX(), start.getY(), start.getZ(),
+            start.getX() + xRange,
+            start.getY() + yRange,
+            start.getZ() + zRange);
+    cp.status=SlimeIslandGenStatus.COMPLETED;
+    cp.owner.markDirty();
+    return;
+    /*
     // save it
     SlimeIslandData data = getIslandData(world);
     data.getIslands().add(new StructureBoundingBox(start.getX(), start.getY(), start.getZ(),
                                               start.getX() + xRange,
                                               start.getY() + yRange,
                                               start.getZ() + zRange));
-    data.markDirty();
+    data.markDirty();*/
   }
 
   // takse the position and goes up until it finds a block. if it doesn't find a block directly above it'll check if it has side blocks on the way up to attach to.
@@ -372,14 +408,14 @@ public class SlimeIslandGenerator implements IWorldGenerator {
   }
 
   protected boolean areSurroundingChunksLoaded(int chunkX, int chunkZ, IChunkProvider chunkprovider) {
-    for(int x = chunkX - 1; x <= chunkX + 1; x++) {
-      for(int z = chunkZ - 1; z <= chunkZ + 1; z++) {
-        if(chunkprovider.getLoadedChunk(x, z) == null) {
-          return false;
-        }
-      }
-    }
-    return true;
-  }
+	    for(int x = chunkX - 1; x <= chunkX + 1; x++) {
+	      for(int z = chunkZ - 1; z <= chunkZ + 1; z++) {
+	        if(chunkprovider.getLoadedChunk(x, z) == null) {
+	          return false;
+	        }
+	      }
+	    }
+	    return true;
+	  }
 
 }

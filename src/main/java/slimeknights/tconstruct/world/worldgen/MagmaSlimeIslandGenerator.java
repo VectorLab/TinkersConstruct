@@ -1,5 +1,5 @@
 package slimeknights.tconstruct.world.worldgen;
-
+/*
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.util.math.BlockPos;
@@ -17,9 +17,9 @@ import slimeknights.tconstruct.shared.block.BlockSlime;
 import slimeknights.tconstruct.world.TinkerWorld;
 import slimeknights.tconstruct.world.block.BlockSlimeDirt;
 import slimeknights.tconstruct.world.block.BlockSlimeGrass;
-
-public class MagmaSlimeIslandGenerator extends SlimeIslandGenerator {
-
+*/
+public class MagmaSlimeIslandGenerator {
+/*
   public static MagmaSlimeIslandGenerator INSTANCE = new MagmaSlimeIslandGenerator();
 
   protected SlimeLakeGenerator lakeGenMagma;
@@ -95,4 +95,5 @@ public class MagmaSlimeIslandGenerator extends SlimeIslandGenerator {
   private boolean isLava(World world, BlockPos pos) {
     return world.getBlockState(pos).getBlock() == Blocks.LAVA;
   }
+*/
 }

@@ -1,5 +1,7 @@
 package slimeknights.tconstruct.world;
 
+import org.apache.logging.log4j.Logger;
+
 import com.google.common.eventbus.Subscribe;
 
 import net.minecraft.block.Block;
@@ -19,9 +21,6 @@ import net.minecraftforge.fml.common.registry.EntityEntry;
 import net.minecraftforge.fml.common.registry.EntityRegistry;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 import net.minecraftforge.registries.IForgeRegistry;
-
-import org.apache.logging.log4j.Logger;
-
 import slimeknights.mantle.item.ItemBlockMeta;
 import slimeknights.mantle.pulsar.pulse.Pulse;
 import slimeknights.tconstruct.TConstruct;
@@ -38,14 +37,13 @@ import slimeknights.tconstruct.world.block.BlockSlimeVine;
 import slimeknights.tconstruct.world.block.BlockTallSlimeGrass;
 import slimeknights.tconstruct.world.entity.EntityBlueSlime;
 import slimeknights.tconstruct.world.item.ItemBlockLeaves;
-import slimeknights.tconstruct.world.worldgen.MagmaSlimeIslandGenerator;
-import slimeknights.tconstruct.world.worldgen.SlimeIslandGenerator;
+import slimeknights.tconstruct.world.worldgen.SlimeIslandUtilities;
 
 @Pulse(id = TinkerWorld.PulseId, description = "Everything that's found in the world and worldgen")
 public class TinkerWorld extends TinkerPulse {
 
   public static final String PulseId = "TinkerWorld";
-  static final Logger log = Util.getLogger(PulseId);
+  public static final Logger log = Util.getLogger(PulseId);
 
   @SidedProxy(clientSide = "slimeknights.tconstruct.world.WorldClientProxy", serverSide = "slimeknights.tconstruct.common.CommonProxy")
   public static CommonProxy proxy;
@@ -123,19 +121,24 @@ public class TinkerWorld extends TinkerPulse {
   // INITIALIZATION
   @Subscribe
   public void init(FMLInitializationEvent event) {
-    proxy.init();
+	proxy.init();
   }
 
   // POST-INITIALIZATION
   @Subscribe
   public void postInit(FMLPostInitializationEvent event) {
+	  /*
     GameRegistry.registerWorldGenerator(SlimeIslandGenerator.INSTANCE, 25);
     GameRegistry.registerWorldGenerator(MagmaSlimeIslandGenerator.INSTANCE, 25);
+    */
+	  GameRegistry.registerWorldGenerator(SlimeIslandUtilities.instance_SlimeIslandGenerator, 25);
 
     MinecraftForge.EVENT_BUS.register(new WorldEvents());
 
     proxy.postInit();
 
     TinkerRegistry.tabWorld.setDisplayIcon(new ItemStack(slimeSapling));
+    
+    SlimeIslandUtilities.postInit();
   }
 }

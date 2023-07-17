@@ -253,6 +253,8 @@ public class BlockSlimeGrass extends Block implements IGrowable {
     PURPLE,
     ORANGE;
 
+	  private final String name=this.toString().toLowerCase(Locale.US);
+
     public static FoliageType getValFromMeta(int meta) {
       if(meta < 0 || meta >= values().length) {
         meta = 0;
@@ -268,7 +270,7 @@ public class BlockSlimeGrass extends Block implements IGrowable {
 
     @Override
     public String getName() {
-      return this.toString().toLowerCase(Locale.US);
+      return this.name;
     }
   }
 

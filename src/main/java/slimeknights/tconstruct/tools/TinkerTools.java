@@ -61,7 +61,7 @@ import slimeknights.tconstruct.tools.ranged.item.BoltCore;
 public class TinkerTools extends AbstractToolPulse {
 
   public static final String PulseId = "TinkerTools";
-  static final Logger log = Util.getLogger(PulseId);
+  public static final Logger log = Util.getLogger(PulseId);
 
   @SidedProxy(clientSide = "slimeknights.tconstruct.tools.ToolClientProxy", serverSide = "slimeknights.tconstruct.common.CommonProxy")
   public static CommonProxy proxy;

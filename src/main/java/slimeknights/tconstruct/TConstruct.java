@@ -50,6 +50,8 @@ import slimeknights.tconstruct.tools.ranged.TinkerRangedWeapons;
 import slimeknights.tconstruct.world.TinkerWorld;
 
 import javax.annotation.Nonnull;
+
+import java.io.File;
 import java.util.Map;
 import java.util.Random;
 
@@ -76,7 +78,7 @@ public class TConstruct {
   public static final String modVersion = "2.13.1";
   public static final String modName = "Tinkers' Construct";
 
-  public static final Logger log = LogManager.getLogger(modID);
+  public static final Logger log = Util.getLogger("Main");
   public static final Random random = new Random();
 
   @Mod.Instance(modID)
@@ -90,6 +92,18 @@ public class TConstruct {
 
   // Tinker pulses
   static {
+	  {
+		  File dir=new File(Loader.instance().getConfigDir(),modID);
+		  if(!dir.isDirectory()) {
+			  if(dir.isFile()) {
+				  TConstruct.log.warn("invalid configure dir, it should not be a file");
+			  }
+			  dir.delete();
+		  }
+		  if(!dir.exists()) {
+			  dir.mkdirs();
+		  }
+	  }
     pulseManager.registerPulse(new TinkerCommons());
     pulseManager.registerPulse(new TinkerWorld());
 

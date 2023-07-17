@@ -9,13 +9,19 @@ import net.minecraft.world.chunk.IChunkProvider;
 import net.minecraft.world.gen.IChunkGenerator;
 import net.minecraftforge.fml.common.IWorldGenerator;
 
+import java.util.List;
 import java.util.Random;
+import java.util.Vector;
 
-public class SlimeLakeGenerator implements IWorldGenerator {
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
-  private final IBlockState liquid;
-  private final IBlockState lakeBottomBlock;
-  private final IBlockState[] slimeBlocks;
+public class SlimeLakeGenerator implements IWorldGenerator,JsonSerializable {
+
+  private IBlockState liquid;
+  private IBlockState lakeBottomBlock;
+  private IBlockState[] slimeBlocks;
 
   public SlimeLakeGenerator(IBlockState liquid, IBlockState lakeBottomBlock, IBlockState... slimeBlocks) {
     this.liquid = liquid;
@@ -23,7 +29,9 @@ public class SlimeLakeGenerator implements IWorldGenerator {
     this.slimeBlocks = slimeBlocks;
   }
 
-  @Override
+  public SlimeLakeGenerator() {}
+
+@Override
   public void generate(Random random, int chunkX, int chunkZ, World world, IChunkGenerator chunkGenerator, IChunkProvider chunkProvider) {
     generateLake(random, world, world.getHeight(new BlockPos(chunkX * 16, 0, chunkZ * 16)));
   }
@@ -160,4 +168,33 @@ public class SlimeLakeGenerator implements IWorldGenerator {
       }
     }
   }
+
+@Override
+public JsonObject toJson() {
+	JsonObject root=new JsonObject();
+	root.add("liquid", SlimeIslandUtilities.serializeBlockToJson(this.liquid));
+	root.add("lakeBottomBlock", SlimeIslandUtilities.serializeBlockToJson(this.lakeBottomBlock));
+	
+	JsonArray o1=new JsonArray();
+	for(IBlockState i:this.slimeBlocks) {
+		o1.add(SlimeIslandUtilities.serializeBlockToJson(i));
+	}
+	root.add("slimeBlocks",o1);
+	
+	return root;
+}
+
+@Override
+public boolean fromJson(JsonObject o) {
+this.liquid=SlimeIslandUtilities.deserializeJsonToBlock(o.get("liquid").getAsJsonObject());
+this.lakeBottomBlock=SlimeIslandUtilities.deserializeJsonToBlock(o.get("lakeBottomBlock").getAsJsonObject());
+
+JsonArray o1=o.get("slimeBlocks").getAsJsonArray();
+List<IBlockState> i1=new Vector<>();
+for(JsonElement o2:o1) {
+	i1.add(SlimeIslandUtilities.deserializeJsonToBlock(o2.getAsJsonObject()));
+}
+this.slimeBlocks=i1.toArray(new IBlockState[0]);
+	return true;
+}
 }
