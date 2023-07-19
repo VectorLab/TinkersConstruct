@@ -1,7 +1,6 @@
 package slimeknights.tconstruct.world.worldgen;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -31,7 +30,11 @@ public final class SlimeIslandUtilities {
 	public static final Gson json = new Gson();
 
 	public static SlimeIslandDataEntry isSlimeIslandAt(World world, BlockPos pos) {
-		return getIslandData(world).getIslandByBlockPos(pos);
+		SlimeIslandData v1=getIslandData(world);
+		if(null==v1) {
+			return null;
+		}
+		return v1.getIslandByBlockPos(pos);
 	}
 
 	public static final SlimeIslandGenerator instance_SlimeIslandGenerator = new SlimeIslandGenerator();
