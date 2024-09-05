@@ -123,10 +123,11 @@ dependencies {
     //compileOnly fg.deobf( "mezz.jei:jei_${minecraft_version}:${jei_version}:api" )
     // at runtime, use the full JEI jar
     //runtime "mezz.jei:jei_${minecraft_version}:${jei_version}"
-	compileOnly fg.deobf( "mezz.jei:jei_${minecraft_version}:${jei_version}" )
 
+	//compileOnly fg.deobf( "mezz.jei:jei_${minecraft_version}:${jei_version}" )
+compileOnly files( "libs/jei_1.12.2-4.16.1.1012-dev.jar" )
     //compileOnly fg.deobf( "mcp.mobius.waila:Hwyla:${hwyla_version}" )
-	compileOnly fg.deobf( files( "libs/Hwyla-1.8.26-B41_1.12.2.jar" ) )
+	compileOnly files( "libs/Hwyla-1.8.26-B42_1.12.2-deobf.jar" )
     compileOnly fg.deobf( "mcjty.theoneprobe:TheOneProbe-1.12:${probe_version}" )
     compileOnly fg.deobf( "cofh:RedstoneFlux:${redstoneflux_version}:universal" )
     //deployerJars 'org.apache.maven.wagon:wagon-ssh:2.2'
